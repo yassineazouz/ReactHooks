@@ -1,25 +1,48 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import MovieList from './Components/MovieList';
+import Filter from './Components/Filter';
+import AddMovieForm from './Components/AddMovieForm';
 import './App.css';
 
-function App() {
+
+const App = () => {
+  const [movies, setMovies] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState([]);
+
+  const handleFilterChange = (filterData) => {
+    const { title, rating } = filterData;
+
+    // Filter movies based on title and rating
+    const filtered = movies.filter((movie) => {
+      const matchTitle = movie.title.toLowerCase().includes(title.toLowerCase());
+      const matchRating = movie.rating >= rating;
+      return matchTitle && matchRating;
+    });
+
+    setFilteredMovies(filtered);
+  };
+
+  const handleAddMovie = (newMovie) => {
+    const validatedRating = newMovie.rating > 10 ? 10 : newMovie.rating;
+  
+    const movieToAdd = {
+      ...newMovie,
+      rating: validatedRating,
+    };
+  
+    setMovies([...movies, movieToAdd]);
+  };
+  
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>Movie App</h1>
+      <AddMovieForm onAddMovie={handleAddMovie} />
+      <Filter onFilterChange={handleFilterChange} />
+      <MovieList movies={filteredMovies.length > 0 ? filteredMovies : movies} />
     </div>
   );
-}
+};
 
 export default App;
